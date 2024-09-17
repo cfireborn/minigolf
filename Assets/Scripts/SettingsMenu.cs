@@ -33,7 +33,7 @@ public class SettingsMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             ReturnToMain();
         }
@@ -44,7 +44,24 @@ public class SettingsMenu : MonoBehaviour
         settingsMenuUi.SetActive(true);
         mainMenuUi.SetActive(false);
     }
-    
+
+    public bool sendData()
+    {
+        // "event": "shot_executed",
+        // "matchId": "12345",
+        // "playerId": "p1",
+        // "playerName": "John Doe",
+        // "holeNumber": 1,
+        // "timestamp": "2024-08-06T10:15:00Z",  // Time when the shot was executed
+        // "shot": {
+        //     "shotNumber": 1,
+        //     "clubUsed": "Driver",
+        //     "yards": 250,  // Actual number of yards made with the shot
+        //     "strokes": 1,  // Number of strokes made, so far
+        //     "holeScore": -3,  // Score of the hole, so far (strokes - par)
+        //     "strokesGained": 0.2,  // Strokes gained in this shot
+        //     "holeCompleted": false  // Indicates whether the hole has been completed, or not (true if the hole has been completed)
+    }
     public void ReturnToMain()
     {
         settingsMenuUi.SetActive(false);
