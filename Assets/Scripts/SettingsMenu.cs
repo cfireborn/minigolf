@@ -45,8 +45,9 @@ public class SettingsMenu : MonoBehaviour
         mainMenuUi.SetActive(false);
     }
 
-    public bool sendData()
+    public void SendData()
     {
+        print("Sending data to the server");
         // "event": "shot_executed",
         // "matchId": "12345",
         // "playerId": "p1",
@@ -61,6 +62,8 @@ public class SettingsMenu : MonoBehaviour
         //     "holeScore": -3,  // Score of the hole, so far (strokes - par)
         //     "strokesGained": 0.2,  // Strokes gained in this shot
         //     "holeCompleted": false  // Indicates whether the hole has been completed, or not (true if the hole has been completed)
+        //did not work
+        return;
     }
     public void ReturnToMain()
     {
