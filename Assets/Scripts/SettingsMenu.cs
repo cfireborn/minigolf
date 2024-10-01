@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -84,7 +85,12 @@ public class SettingsMenu : MonoBehaviour
         WWWForm form = new WWWForm();
         foreach (TMP_InputField inputField in textInputs)
         {
-            form.AddField(inputField.transform.parent.name, inputField.text);
+            // TODO: Future refactor to get rid of this string manipulation to achieve field names
+            // This is currently dependent on the object names in Unity which is brittle/fragile/prone to breaking
+            string fieldName = inputField.transform.parent.name;
+            fieldName = Char.ToLowerInvariant(fieldName[0]) + fieldName.Substring(1);
+            fieldName = fieldName.Replace("Text", "");
+            form.AddField(fieldName, inputField.text);
         }
         
         UnityWebRequest www = UnityWebRequest.Post("https://httpbin.org/post", form);
