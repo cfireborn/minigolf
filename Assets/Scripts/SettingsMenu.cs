@@ -14,7 +14,7 @@ public class SettingsMenu : MonoBehaviour
 
     [FormerlySerializedAs("SettingsMenuUI")] public GameObject settingsMenuUi;
     
-    [SerializeField] TMP_InputField eventText;
+    [SerializeField] TMP_InputField[] textInputs;
     
     
     public AudioMixer masterMixer;
@@ -82,11 +82,12 @@ public class SettingsMenu : MonoBehaviour
         // }
         // 
         WWWForm form = new WWWForm();
-        form.AddField("event", eventText.text);
-        form.AddField("", eventText.text);
+        foreach (TMP_InputField inputField in textInputs)
+        {
+            form.AddField(inputField.transform.parent.name, inputField.text);
+        }
         
         UnityWebRequest www = UnityWebRequest.Post("https://httpbin.org/post", form);
-        Debug.Log("Sending data to the server" + eventText.text + form.data);
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
