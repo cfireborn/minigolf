@@ -57,7 +57,7 @@ public class SettingsMenu : MonoBehaviour
         StartCoroutine(PostData());
     }
 
-    IEnumerator PostData()
+    private IEnumerator PostData()
     {
         //"event": "shot_executed",
         //   "matchId": "12345",
@@ -86,7 +86,7 @@ public class SettingsMenu : MonoBehaviour
         form.AddField("", eventText.text);
         
         UnityWebRequest www = UnityWebRequest.Post("https://httpbin.org/post", form);
-
+        Debug.Log("Sending data to the server" + eventText.text + form.data);
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
@@ -96,7 +96,6 @@ public class SettingsMenu : MonoBehaviour
         {
             string response = www.downloadHandler.text;
             Debug.Log(response);
-            
         }
         www.Dispose();
         
