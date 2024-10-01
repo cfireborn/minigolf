@@ -17,6 +17,8 @@ public class SettingsMenu : MonoBehaviour
     [FormerlySerializedAs("SettingsMenuUI")] public GameObject settingsMenuUi;
     
     [SerializeField] TMP_InputField[] textInputs;
+
+    [SerializeField] private TMP_InputField timestampInput;
     
     
     public AudioMixer masterMixer;
@@ -24,9 +26,8 @@ public class SettingsMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
-
+    
     public void PlayGame()
     {
         SaveLoader.LoadGame();
@@ -43,8 +44,11 @@ public class SettingsMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            ReturnToMain();
+            SendData();
         }
+        timestampInput.text = 
+            timestampInput.text = DateTime.Now.ToUniversalTime()
+                .ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture);
     }
 
     public void OpenSettings()
