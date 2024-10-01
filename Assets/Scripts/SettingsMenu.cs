@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -93,7 +94,7 @@ public class SettingsMenu : MonoBehaviour
             form.AddField(fieldName, inputField.text);
         }
         
-        Debug.Log("datetime = " + DateTime.Now.ToString("O"));
+        Debug.Log("datetime = " + DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture));
         
         UnityWebRequest www = UnityWebRequest.Post("https://httpbin.org/post", form);
         yield return www.SendWebRequest();
