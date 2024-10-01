@@ -1,16 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class SettingsMenu : MonoBehaviour
 {
     [FormerlySerializedAs("MainMenuUI")] public GameObject mainMenuUi;
 
     [FormerlySerializedAs("SettingsMenuUI")] public GameObject settingsMenuUi;
-
+    
+    [SerializeField] TMP_InputField eventText;
+    
+    
     public AudioMixer masterMixer;
     
     // Start is called before the first frame update
@@ -48,13 +54,18 @@ public class SettingsMenu : MonoBehaviour
     public void SendData()
     {
         print("Sending data to the server");
-        // "event": "shot_executed",
-        // "matchId": "12345",
-        // "playerId": "p1",
-        // "playerName": "John Doe",
-        // "holeNumber": 1,
-        // "timestamp": "2024-08-06T10:15:00Z",  // Time when the shot was executed
-        // "shot": {
+        StartCoroutine(PostData());
+    }
+
+    IEnumerator PostData()
+    {
+        //"event": "shot_executed",
+        //   "matchId": "12345",
+        //   "playerId": "p1",
+        //   "playerName": "John Doe",
+        //   "holeNumber": 1,
+        //   "timestamp": "2024-08-06T10:15:00Z",  // Time when the shot was executed
+        //   "shot": {
         //     "shotNumber": 1,
         //     "clubUsed": "Driver",
         //     "yards": 250,  // Actual number of yards made with the shot
@@ -62,8 +73,33 @@ public class SettingsMenu : MonoBehaviour
         //     "holeScore": -3,  // Score of the hole, so far (strokes - par)
         //     "strokesGained": 0.2,  // Strokes gained in this shot
         //     "holeCompleted": false  // Indicates whether the hole has been completed, or not (true if the hole has been completed)
-        //did not work
-        return;
+        //   },
+        //    "currentHoleStats": {
+        //     "par": 4,
+        //     "totalYards": 350,  // Hole total yards
+        //     "baseline": 3.8,
+        //   }
+        // }
+        // 
+        WWWForm form = new WWWForm();
+        form.AddField("event", eventText.text);
+        form.AddField("", eventText.text);
+        
+        UnityWebRequest www = UnityWebRequest.Post("https://httpbin.org/post", form);
+
+        yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            string response = www.downloadHandler.text;
+            Debug.Log(response);
+            
+        }
+        www.Dispose();
+        
     }
     public void ReturnToMain()
     {
