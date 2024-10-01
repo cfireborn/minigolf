@@ -93,6 +93,8 @@ public class SettingsMenu : MonoBehaviour
             form.AddField(fieldName, inputField.text);
         }
         
+        Debug.Log("datetime = " + DateTime.Now.ToString("O"));
+        
         UnityWebRequest www = UnityWebRequest.Post("https://httpbin.org/post", form);
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
