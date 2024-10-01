@@ -15191,6 +15191,10 @@ MonoBehaviour:
   textInputs:
   - {fileID: 1521848227}
   - {fileID: 2093711857}
+  - {fileID: 1591150234}
+  - {fileID: 198363488}
+  - {fileID: 367939214}
+  - {fileID: 1251586116}
   timestampInput: {fileID: 1251586116}
   masterMixer: {fileID: 0}
 --- !u!1 &2039473282
