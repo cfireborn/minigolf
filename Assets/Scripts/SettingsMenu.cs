@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -98,9 +99,11 @@ public class SettingsMenu : MonoBehaviour
             form.AddField(fieldName, inputField.text);
         }
         
+        
+        
         Debug.Log("datetime = " + DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture));
         
-        UnityWebRequest www = UnityWebRequest.Post("https://httpbin.org/post", form);
+        UnityWebRequest www = UnityWebRequest.Post("localhost:8080/api/events/create/", form);
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
@@ -113,6 +116,14 @@ public class SettingsMenu : MonoBehaviour
         }
         www.Dispose();
         
+        // var request = new UnityWebRequest(url, "POST");
+        // byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJsonString);
+        // request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
+        // request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+        // request.SetRequestHeader("Content-Type", "application/json");
+        // yield return request.SendWebRequest();
+        // Debug.Log("Status Code: " + request.responseCode);
+        // request.Dispose();
     }
     public void ReturnToMain()
     {
