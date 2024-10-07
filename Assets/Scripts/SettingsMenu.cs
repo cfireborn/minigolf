@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -63,7 +64,27 @@ public class SettingsMenu : MonoBehaviour
         print("Sending data to the server");
         StartCoroutine(PostData());
     }
+    public void SendDataTest()
+    {
+        print("Sending data to the server");
+        StartCoroutine(TestPost());
+    }
+    
+    IEnumerator TestPost()
+    {
+        var request = new UnityWebRequest("localhost:8080/api/events/create/", "POST");
+        string jsonDataToSend = "{\n    \"event_type\": \"game_end\",\n    \"event_data\": {\n        \"event_type\": \"game_end\",\n        \"metadata\": {\n            \"timestamp\": \"2024-08-06T14:00:00Z\",\n            \"game_details\": {\n                \"final_scores\": [\n                    {\n                        \"player_id\": 1,\n                        \"score\": 15,\n                        \"leaderboard_position\": 1\n                    },\n                    {\n                        \"player_id\": 2,\n                        \"score\": 4,\n                        \"leaderboard_position\": 2\n                    }\n                ],\n                \"winner\": {\n                    \"player_id\": 1,\n                    \"score\": 5,\n                    \"leaderboard_position\": 1\n                }\n            }\n        },\n        \"session_id\": \"2\"\n    },\n    \"created\": \"2024-10-07T23:30:39.314357Z\",\n    \"processed\": true\n}"; 
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonDataToSend);
+        request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        print(jsonDataToSend);
+        yield return request.Send();
 
+        Debug.Log("Status Code: " + request.responseCode);
+        Debug.Log(request.error);
+    }
+    
     private IEnumerator PostData()
     {
         //"event": "shot_executed",
@@ -89,6 +110,8 @@ public class SettingsMenu : MonoBehaviour
         // }
         // 
         WWWForm form = new WWWForm();
+        Dictionary<string, JObject> json_eventObject = new Dictionary<string,JObject>();
+        
         foreach (TMP_InputField inputField in textInputs)
         {
             // TODO: Future refactor to get rid of this string manipulation to achieve field names
