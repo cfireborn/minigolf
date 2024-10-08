@@ -78,7 +78,7 @@ public class SettingsMenu : MonoBehaviour
         request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
-        print(jsonDataToSend);
+        print(request.GetRequestHeader("Content-Type"));
         yield return request.Send();
 
         Debug.Log("Status Code: " + request.responseCode);
