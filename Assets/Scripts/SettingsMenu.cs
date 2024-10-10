@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
@@ -72,9 +73,15 @@ public class SettingsMenu : MonoBehaviour
     
     IEnumerator TestPost()
     {
+        
         var request = new UnityWebRequest("localhost:8080/api/events/create/", "POST");
-        string jsonDataToSend = "{\n    \"event_type\": \"game_end\",\n    \"event_data\": {\n        \"event_type\": \"game_end\",\n        \"metadata\": {\n            \"timestamp\": \"2024-08-06T14:00:00Z\",\n            \"game_details\": {\n                \"final_scores\": [\n                    {\n                        \"player_id\": 1,\n                        \"score\": 15,\n                        \"leaderboard_position\": 1\n                    },\n                    {\n                        \"player_id\": 2,\n                        \"score\": 4,\n                        \"leaderboard_position\": 2\n                    }\n                ],\n                \"winner\": {\n                    \"player_id\": 1,\n                    \"score\": 5,\n                    \"leaderboard_position\": 1\n                }\n            }\n        },\n        \"session_id\": \"2\"\n    },\n    \"created\": \"2024-10-07T23:30:39.314357Z\",\n    \"processed\": true\n}"; 
+        Dictionary<string, object> dict = new Dictionary<string, object>();
+        string jsonDataToSend = "game_ended_event = {\n    \"event_type\": \"game_end\",\n    \"session_id\": \"12345\",\n    \"metadata\": {\n        \"timestamp\": \"2024-08-06T14:00:00Z\",\n        \"game_details\": {\n            \"final_scores\": [\n                {\n                    \"player_id\": \"p1\",\n                    \"score\": 5,\n                    \"leaderboard_position\": 1\n                },\n                {\n                    \"player_id\": \"p2\",\n                    \"score\": 4,\n                    \"leaderboard_position\": 2\n                }\n            ],\n            \"winner\": {\n                \"player_id\": \"p1\",\n                \"score\": 5,\n                \"leaderboard_position\": 1\n            }\n        },\n    }\n}";
+
+        textInputs[0].text = jsonDataToSend;
+       
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonDataToSend);
+        
         request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
@@ -83,6 +90,8 @@ public class SettingsMenu : MonoBehaviour
 
         Debug.Log("Status Code: " + request.responseCode);
         Debug.Log(request.error);
+        Debug.Log(request.downloadHandler.text);
+        Debug.Log(request.uploadHandler.data);
     }
     
     private IEnumerator PostData()

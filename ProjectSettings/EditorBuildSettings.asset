@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/LlamAcademy/Minigolf/Scenes/GenerateMenusScene.unity
+    guid: 5803271b22a9c452b8095956dafd8fe7
+  - enabled: 1
+    path: Assets/LlamAcademy/Minigolf/Scenes/VideoScene.unity
+    guid: 34c52024c585f4ed19c0031e1005df0a
+  - enabled: 1
     path: Assets/LlamAcademy/Minigolf/Scenes/Main Menu.unity
     guid: 6817956fab772a14392489164d61994c
   - enabled: 1
