@@ -3,9 +3,39 @@ using UnityEngine.Video;
 
 public class VideoController : MonoBehaviour
 {
+    struct Timestamp
+    {
+        public int Hour;
+        public int Minute;
+        public int Second;
+
+        public Timestamp(int hours, int minutes, int seconds)
+        {
+            Hour = hours;
+            Minute = minutes;
+            Second = seconds;
+        }
+
+        public double GetTimeInSeconds()
+        {
+            return (double) (Hour * 3600d + Minute * 60d + Second);
+        }
+            
+    }
+    
     [SerializeField] private VideoPlayer videoPlayer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private int speedSetting = 0;
+    private int _speedSetting = 0;
+    private int _currentCheckpoint = 0;
+
+    private readonly Timestamp[] _checkpoints = new Timestamp[]
+    {
+        new Timestamp(0, 0, 1),
+        new Timestamp(0, 0, 5),
+        new Timestamp(0, 0, 11),
+        new Timestamp(0, 0, 20)
+    };
+    
     void Start()
     {
         videoPlayer.Pause();
@@ -18,7 +48,7 @@ public class VideoController : MonoBehaviour
         {
             videoPlayer.Play();
         }
-        // buttonup 0 is left click
+        // buttonUp 0 is left click
         if (Input.GetMouseButtonUp(0))
         { 
             videoPlayer.Play();
@@ -26,15 +56,22 @@ public class VideoController : MonoBehaviour
         
     }
     
-    private void SpeedUpShot()
+    public void SpeedUpShot()
     {
-        speedSetting += 1;
-        speedSetting %= 3;
-        if (speedSetting == 0)
+        _speedSetting += 1;
+        _speedSetting %= 3;
+        if (_speedSetting == 0)
             videoPlayer.playbackSpeed = 1f;
-        else if (speedSetting == 1)
+        else if (_speedSetting == 1)
             videoPlayer.playbackSpeed = 5f;
-        else if (speedSetting == 2)
+        else if (_speedSetting == 2)
             videoPlayer.playbackSpeed = 20f;
+    }
+
+    public void NextCheckpoint()
+    {
+        _currentCheckpoint += 1;
+        _currentCheckpoint %= _checkpoints.Length;
+        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
     }
 }
