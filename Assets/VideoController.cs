@@ -30,9 +30,9 @@ public class VideoController : MonoBehaviour
 
     private readonly Timestamp[] _checkpoints = new Timestamp[]
     {
-        new Timestamp(0, 0, 1),
-        new Timestamp(0, 0, 5),
         new Timestamp(0, 0, 11),
+        new Timestamp(0, 0, 24),
+        new Timestamp(0, 0, 27),
         new Timestamp(0, 0, 20)
     };
     
@@ -44,6 +44,14 @@ public class VideoController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Check if we have advanced by any checkpoints;
+        if (videoPlayer.time > _checkpoints[(_currentCheckpoint+1)%_checkpoints.Length].GetTimeInSeconds())
+        {
+            videoPlayer.Pause();
+            _currentCheckpoint += 1;
+            videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+        }
+            
         if (Input.GetKeyDown(KeyCode.Space))
         {
             videoPlayer.Play();
