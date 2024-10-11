@@ -33,11 +33,19 @@ public class VideoController : MonoBehaviour
         new Timestamp(0, 0, 11),
         new Timestamp(0, 0, 24),
         new Timestamp(0, 0, 27),
-        new Timestamp(0, 0, 20)
+        new Timestamp(0, 0, 44),
+        new Timestamp(0, 0, 52),
+        new Timestamp(0, 1, 4),
+        new Timestamp(0, 1, 19),
+        new Timestamp(0, 1, 38),
+        new Timestamp(0, 1, 47),
+        new Timestamp(0, 2, 0),
+        new Timestamp(0, 2, 13),
     };
     
     void Start()
     {
+        videoPlayer.time = _checkpoints[0].GetTimeInSeconds();
         videoPlayer.Pause();
     }
 
