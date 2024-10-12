@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -7,9 +8,9 @@ public class VideoController : MonoBehaviour
     {
         public int Hour;
         public int Minute;
-        public int Second;
+        public double Second;
 
-        public Timestamp(int hours, int minutes, int seconds)
+        public Timestamp(int hours, int minutes, double seconds)
         {
             Hour = hours;
             Minute = minutes;
@@ -18,21 +19,46 @@ public class VideoController : MonoBehaviour
 
         public double GetTimeInSeconds()
         {
-            return (double) (Hour * 3600d + Minute * 60d + Second);
+            return (Hour * 3600d + Minute * 60d + Second);
         }
-            
+        
+        public Timestamp GetTimeStampFromSeconds(double seconds)
+        {
+            int hours = (int) (seconds / 3600);
+            seconds -= hours * 3600d;
+            int minutes = (int) (seconds / 60d);
+            seconds -= minutes * 60d;
+            return new Timestamp(hours, minutes, seconds);
+        }
+
+        public override string ToString()
+        {
+            return Hour +
+                   ":" +
+                   Minute +
+                   "" +
+                   Second +
+                   "";
+        }
     }
     
+    [SerializeField] private TextMeshProUGUI checkpointSpeedText;
     [SerializeField] private VideoPlayer videoPlayer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int _speedSetting = 0;
+    private readonly float[] _speeds = {1f, 5f, 20f};
     private int _currentCheckpoint = 0;
 
     private readonly Timestamp[] _checkpoints = new Timestamp[]
     {
-        new Timestamp(0, 0, 11),
+        // Hole 1 start
+        new Timestamp(0, 0, 16), 
+        // Hole 1 end
         new Timestamp(0, 0, 24),
-        new Timestamp(0, 0, 27),
+        // Hole 2 start
+        new Timestamp(0, 0, 29),
+        // Hole 2 End
+        new Timestamp(0, 0, 33),
         new Timestamp(0, 0, 44),
         new Timestamp(0, 0, 52),
         new Timestamp(0, 1, 4),
@@ -60,7 +86,6 @@ public class VideoController : MonoBehaviour
             _currentCheckpoint %= _checkpoints.Length;
             videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
         }
-            
         if (Input.GetKeyDown(KeyCode.Space))
         {
             videoPlayer.Play();
@@ -70,19 +95,18 @@ public class VideoController : MonoBehaviour
         { 
             videoPlayer.Play();
         }
-        
+
+        checkpointSpeedText.text = "" +
+                                   "Current Checkpoint: " + _currentCheckpoint + "\n" +
+                                   "Current PlaybackSpeed: \n" + _speeds[_speedSetting] +
+                                   "Current Time: " + videoPlayer.time;
     }
     
     public void SpeedUpShot()
     {
         _speedSetting += 1;
         _speedSetting %= 3;
-        if (_speedSetting == 0)
-            videoPlayer.playbackSpeed = 1f;
-        else if (_speedSetting == 1)
-            videoPlayer.playbackSpeed = 5f;
-        else if (_speedSetting == 2)
-            videoPlayer.playbackSpeed = 20f;
+        videoPlayer.playbackSpeed = _speeds[_speedSetting];
     }
     
     public void ResetCheckpoint()
@@ -104,7 +128,7 @@ public class VideoController : MonoBehaviour
 
     public void PreviousCheckpoint()
     {
-        _currentCheckpoint -= 1;
+        _currentCheckpoint -= 2;
         _currentCheckpoint %= _checkpoints.Length;
         videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
     }
