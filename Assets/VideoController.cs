@@ -57,6 +57,7 @@ public class VideoController : MonoBehaviour
         {
             videoPlayer.Pause();
             _currentCheckpoint += 1;
+            _currentCheckpoint %= _checkpoints.Length;
             videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
         }
             
@@ -83,10 +84,27 @@ public class VideoController : MonoBehaviour
         else if (_speedSetting == 2)
             videoPlayer.playbackSpeed = 20f;
     }
-
+    
+    public void ResetCheckpoint()
+    {
+        _currentCheckpoint = 0;
+        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+    }
     public void NextCheckpoint()
     {
         _currentCheckpoint += 1;
+        _currentCheckpoint %= _checkpoints.Length;
+        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+    }
+
+    public void SkipAnimation()
+    {
+        videoPlayer.time = _checkpoints[(_currentCheckpoint + 1) % _checkpoints.Length].GetTimeInSeconds();
+    }
+
+    public void PreviousCheckpoint()
+    {
+        _currentCheckpoint -= 1;
         _currentCheckpoint %= _checkpoints.Length;
         videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
     }
