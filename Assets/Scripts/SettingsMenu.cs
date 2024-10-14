@@ -49,9 +49,14 @@ public class SettingsMenu : MonoBehaviour
         {
             SendData();
         }
-        timestampInput.text = 
-            timestampInput.text = DateTime.Now.ToUniversalTime()
-                .ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture);
+
+        if (timestampInput)
+        {
+            timestampInput.text = 
+                timestampInput.text = DateTime.Now.ToUniversalTime()
+                    .ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture); 
+        }
+
     }
 
     public void OpenSettings()
@@ -76,11 +81,11 @@ public class SettingsMenu : MonoBehaviour
         
         var request = new UnityWebRequest("localhost:8080/api/events/create/", "POST");
         Dictionary<string, object> dict = new Dictionary<string, object>();
-        string jsonDataToSend = "game_ended_event = {\n    \"event_type\": \"game_end\",\n    \"session_id\": \"12345\",\n    \"metadata\": {\n        \"timestamp\": \"2024-08-06T14:00:00Z\",\n        \"game_details\": {\n            \"final_scores\": [\n                {\n                    \"player_id\": \"p1\",\n                    \"score\": 5,\n                    \"leaderboard_position\": 1\n                },\n                {\n                    \"player_id\": \"p2\",\n                    \"score\": 4,\n                    \"leaderboard_position\": 2\n                }\n            ],\n            \"winner\": {\n                \"player_id\": \"p1\",\n                \"score\": 5,\n                \"leaderboard_position\": 1\n            }\n        },\n    }\n}";
-
-        textInputs[0].text = jsonDataToSend;
-       
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonDataToSend);
+        string jsonDataToSend = textInputs[0].text;
+        JObject json = JObject.Parse(jsonDataToSend);
+        string jtext = json.ToString();
+        print(jtext);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jtext);
         
         request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
