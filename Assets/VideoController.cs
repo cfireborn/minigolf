@@ -31,14 +31,25 @@ public class VideoController : MonoBehaviour
             return new Timestamp(hours, minutes, seconds);
         }
 
+        public static string GetStringFromSeconds(double seconds)
+        {
+            int hours = (int) (seconds / 3600);
+            seconds -= hours * 3600d;
+            int minutes = (int) (seconds / 60d);
+            seconds -= minutes * 60d;
+            return hours +
+                   ":" +
+                   minutes +
+                   ":" +
+                   seconds.ToString("F2");
+        }
         public override string ToString()
         {
             return Hour +
                    ":" +
                    Minute +
-                   "" +
-                   Second +
-                   "";
+                   ":" +
+                   Second;
         }
     }
     
@@ -90,6 +101,38 @@ public class VideoController : MonoBehaviour
         {
             videoPlayer.Play();
         }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+                    ResetCheckpoint();
+        }
+                
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+                    PreviousCheckpoint();
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+                    SkipAnimation();
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+                    NextCheckpoint();
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+                    SpeedUpShot();
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (videoPlayer.isPlaying)
+            {
+                videoPlayer.Pause();
+            }
+            else
+            {
+                videoPlayer.Play();
+            }
+        }
         // buttonUp 0 is left click
         if (Input.GetMouseButtonUp(0))
         { 
@@ -99,7 +142,8 @@ public class VideoController : MonoBehaviour
         checkpointSpeedText.text = "" +
                                    "Current Checkpoint: " + _currentCheckpoint + "\n" +
                                    "Current PlaybackSpeed: \n" + _speeds[_speedSetting] +
-                                   "Current Time: " + videoPlayer.time;
+                                   "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time);
+       
     }
     
     public void SpeedUpShot()
@@ -130,6 +174,10 @@ public class VideoController : MonoBehaviour
     {
         _currentCheckpoint -= 2;
         _currentCheckpoint %= _checkpoints.Length;
+        if (_currentCheckpoint < 0)
+        {
+            _currentCheckpoint += _checkpoints.Length;
+        }
         videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
     }
 }
