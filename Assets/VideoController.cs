@@ -73,7 +73,7 @@ public class VideoController : MonoBehaviour
         // Hit 3 start
         new Timestamp(0, 0, 44.6),
         // Hit 3 end
-        new Timestamp(0, 0, 50.55),
+        new Timestamp(0, 0, 48.3),
         // Hole 2 Hit 4 start
         new Timestamp(0, 0, 53.25),
         // Hit 4 end
@@ -85,15 +85,23 @@ public class VideoController : MonoBehaviour
         // Hit 6 start
         new Timestamp(0, 1, 20.95),
         // Hit 6 end
-        new Timestamp(0, 1, 25),
+        new Timestamp(0, 1, 28.4),
         // Hit 7 start
-        new Timestamp(0, 2, 16.5),
+        new Timestamp(0, 1, 38.1),
         // Hit 7 end
-        new Timestamp(0, 2, 20.5),
-        // Hit 8 start
-        new Timestamp(0, 2, 16.5),
+        new Timestamp(0, 1, 42),
+        
+        // checkpoint 14
+        // Hole 3 Hit 8 start
+        new Timestamp(0, 1, 47.5),
         // Hit 8 end
-        new Timestamp(0, 2, 20.5),
+        new Timestamp(0, 1, 57.3),
+        new Timestamp(0, 2, 16.5),
+        new Timestamp(0, 3, 20.5),
+        new Timestamp(0, 2, 16.5),
+        new Timestamp(0, 3, 20.5),
+        new Timestamp(0, 2, 16.5),
+        new Timestamp(0, 3, 20.5),
         new Timestamp(0, 2, 16.5),
         new Timestamp(0, 3, 20.5),
     };
