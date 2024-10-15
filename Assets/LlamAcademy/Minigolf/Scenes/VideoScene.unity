@@ -484,16 +484,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328615417}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.58, y: 0.58, z: 0.58}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00006055075}
+  m_LocalScale: {x: 2.7619047, y: 2.7619052, z: 2.7619052}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 609970158}
+  m_Father: {fileID: 1623376627}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -326, y: -141}
+  m_AnchoredPosition: {x: 342.85724, y: -342.8571}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &328615419
@@ -1058,13 +1058,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1956083842}
   - {fileID: 1618023041}
   - {fileID: 126223363}
   - {fileID: 1623376627}
   - {fileID: 2118826953}
-  - {fileID: 1676957983}
-  - {fileID: 328615418}
-  - {fileID: 1956083842}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2129,11 +2127,13 @@ RectTransform:
   - {fileID: 529039662}
   - {fileID: 985267475}
   - {fileID: 1850205927}
+  - {fileID: 1676957983}
+  - {fileID: 328615418}
   m_Father: {fileID: 609970158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -314, y: -36}
+  m_AnchoredPosition: {x: -314, y: -46}
   m_SizeDelta: {x: -107.7749, y: 531.7781}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1676957982
@@ -2161,16 +2161,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1676957982}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.58, y: 0.58, z: 0.58}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00006055075}
+  m_LocalScale: {x: 2.7619047, y: 2.7619052, z: 2.7619052}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 609970158}
+  m_Father: {fileID: 1623376627}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -329, y: 146}
+  m_AnchoredPosition: {x: -71.42853, y: 995.23816}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1676957984
@@ -2193,12 +2193,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'LeftClick or Space: Execute shot
+  m_text: 'LeftClick: Execute shot
 
     r - reset to start of level
 
-    b
-    - back to previous shot
+    b - back
+    to previous shot
 
     s - skip animation, quick-complete current shot
 
@@ -2208,7 +2208,12 @@ MonoBehaviour:
     k - speed up
     shot
 
-    p - pause'
+    p or spacebar - pause
+
+    < > Forward/back 1 second
+
+    m - mute/unmute
+    (no button)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

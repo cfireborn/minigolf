@@ -62,22 +62,40 @@ public class VideoController : MonoBehaviour
 
     private readonly Timestamp[] _checkpoints = new Timestamp[]
     {
-        // Hole 1 start
-        new Timestamp(0, 0, 16), 
-        // Hole 1 end
+        // Hole Hit 1 start
+        new Timestamp(0, 0, 15.85), 
+        // Hit 1 end
         new Timestamp(0, 0, 24),
-        // Hole 2 start
-        new Timestamp(0, 0, 29),
-        // Hole 2 End
+        // Hit 2 start
+        new Timestamp(0, 0, 28.7),
+        // Hit 2 end
         new Timestamp(0, 0, 33),
-        new Timestamp(0, 0, 44),
-        new Timestamp(0, 0, 52),
-        new Timestamp(0, 1, 4),
-        new Timestamp(0, 1, 19),
-        new Timestamp(0, 1, 38),
-        new Timestamp(0, 1, 47),
-        new Timestamp(0, 2, 0),
-        new Timestamp(0, 2, 13),
+        // Hit 3 start
+        new Timestamp(0, 0, 44.6),
+        // Hit 3 end
+        new Timestamp(0, 0, 50.55),
+        // Hole 2 Hit 4 start
+        new Timestamp(0, 0, 53.25),
+        // Hit 4 end
+        new Timestamp(0, 1, 1.85),
+        // Hit 5 start
+        new Timestamp(0, 1, 4.8),
+        // Hit 5 end
+        new Timestamp(0, 1, 16.5),
+        // Hit 6 start
+        new Timestamp(0, 1, 20.95),
+        // Hit 6 end
+        new Timestamp(0, 1, 25),
+        // Hit 7 start
+        new Timestamp(0, 2, 16.5),
+        // Hit 7 end
+        new Timestamp(0, 2, 20.5),
+        // Hit 8 start
+        new Timestamp(0, 2, 16.5),
+        // Hit 8 end
+        new Timestamp(0, 2, 20.5),
+        new Timestamp(0, 2, 16.5),
+        new Timestamp(0, 3, 20.5),
     };
     
     void Start()
@@ -97,10 +115,7 @@ public class VideoController : MonoBehaviour
             _currentCheckpoint %= _checkpoints.Length;
             videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
         }
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            videoPlayer.Play();
-        }
+        
         if (Input.GetKeyDown(KeyCode.R))
         {
                     ResetCheckpoint();
@@ -122,7 +137,7 @@ public class VideoController : MonoBehaviour
         {
                     SpeedUpShot();
         }
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Space))
         {
             if (videoPlayer.isPlaying)
             {
@@ -133,15 +148,27 @@ public class VideoController : MonoBehaviour
                 videoPlayer.Play();
             }
         }
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+                    videoPlayer.time -= 1d;
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+                    videoPlayer.time += 1d;
+        }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            videoPlayer.SetDirectAudioMute(0, !videoPlayer.GetDirectAudioMute(0));
+        }
         // buttonUp 0 is left click
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0)) 
         { 
             videoPlayer.Play();
         }
 
         checkpointSpeedText.text = "" +
                                    "Current Checkpoint: " + _currentCheckpoint + "\n" +
-                                   "Current PlaybackSpeed: \n" + _speeds[_speedSetting] +
+                                   "Current PlaybackSpeed: " + _speeds[_speedSetting] + "\n" +
                                    "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time);
        
     }
