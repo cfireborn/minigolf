@@ -96,14 +96,12 @@ public class VideoController : MonoBehaviour
         new Timestamp(0, 1, 47.5),
         // Hit 8 end
         new Timestamp(0, 1, 57.3),
-        new Timestamp(0, 2, 16.5),
-        new Timestamp(0, 3, 20.5),
-        new Timestamp(0, 2, 16.5),
-        new Timestamp(0, 3, 20.5),
-        new Timestamp(0, 2, 16.5),
-        new Timestamp(0, 3, 20.5),
-        new Timestamp(0, 2, 16.5),
-        new Timestamp(0, 3, 20.5),
+        // Hit 9 start
+        new Timestamp(0, 2, 7.3),
+        // Hit 9 end
+        new Timestamp(0, 2, 12.3),
+        // Video End
+        new Timestamp(0, 2, 16.5)
     };
     
     void Start()
