@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.Video;
+using Toggle = UnityEngine.UI.Toggle;
 
 public class VideoController : MonoBehaviour
 {
@@ -53,13 +55,14 @@ public class VideoController : MonoBehaviour
         }
     }
     
+    [SerializeField] private Toggle sendLiveDataToggle;
     [SerializeField] private TextMeshProUGUI checkpointSpeedText;
     [SerializeField] private VideoPlayer videoPlayer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int _speedSetting = 0;
     private readonly float[] _speeds = {1f, 5f, 20f};
     private int _currentCheckpoint = 0;
-
+    
     private readonly Timestamp[] _checkpoints = new Timestamp[]
     {
         // Hole Hit 1 start
@@ -116,10 +119,7 @@ public class VideoController : MonoBehaviour
         // Check if we have advanced by any checkpoints;
         if (videoPlayer.time > _checkpoints[(_currentCheckpoint+1)%_checkpoints.Length].GetTimeInSeconds())
         {
-            videoPlayer.Pause();
-            _currentCheckpoint += 1;
-            _currentCheckpoint %= _checkpoints.Length;
-            videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+            UpdateCheckpoint();
         }
         
         if (Input.GetKeyDown(KeyCode.R))
@@ -167,10 +167,10 @@ public class VideoController : MonoBehaviour
             videoPlayer.SetDirectAudioMute(0, !videoPlayer.GetDirectAudioMute(0));
         }
         // buttonUp 0 is left click
-        if (Input.GetMouseButtonUp(0)) 
-        { 
-            videoPlayer.Play();
-        }
+        // if (Input.GetMouseButtonUp(0)) 
+        // { 
+            // videoPlayer.Play();
+        // }
 
         checkpointSpeedText.text = "" +
                                    "Current Checkpoint: " + _currentCheckpoint + "\n" +
@@ -178,7 +178,15 @@ public class VideoController : MonoBehaviour
                                    "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time);
        
     }
-    
+
+    private void UpdateCheckpoint()
+    {
+        videoPlayer.Pause();
+        _currentCheckpoint += 1;
+        _currentCheckpoint %= _checkpoints.Length;
+        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+    }
+
     public void SpeedUpShot()
     {
         _speedSetting += 1;
@@ -193,9 +201,9 @@ public class VideoController : MonoBehaviour
     }
     public void NextCheckpoint()
     {
-        _currentCheckpoint += 1;
-        _currentCheckpoint %= _checkpoints.Length;
-        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+        int index = _currentCheckpoint + 1;
+        index = _currentCheckpoint % _checkpoints.Length;
+        videoPlayer.time = _checkpoints[index].GetTimeInSeconds();
     }
 
     public void SkipAnimation()
