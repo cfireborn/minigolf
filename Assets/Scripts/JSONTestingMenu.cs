@@ -94,7 +94,7 @@ public class JSONTestingMenu : MonoBehaviour
         }
         output += "\nDownload Handler: " + request.downloadHandler.text;
         output += "\nUpload Handler: " + request.uploadHandler.data;
-        
+        output += "\nContent Type: " + request.GetRequestHeader("Content-Type");
         Debug.Log(output);
         
         textOutput.text = output;
