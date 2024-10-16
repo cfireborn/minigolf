@@ -288,9 +288,9 @@ public class VideoController : MonoBehaviour
     }
     public void NextCheckpoint()
     {
-        int index = _currentCheckpoint + 1;
-        index = _currentCheckpoint % _checkpoints.Length;
-        videoPlayer.time = _checkpoints[index].GetTimeInSeconds();
+        _currentCheckpoint += 1;
+        _currentCheckpoint %= _checkpoints.Length;
+        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
     }
 
     public void SkipAnimation()
