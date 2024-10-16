@@ -21,7 +21,6 @@ public class JSONTestingMenu : MonoBehaviour
     
     [SerializeField] TMP_InputField textInput;
     [SerializeField] TMP_InputField textOutput;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -51,7 +50,7 @@ public class JSONTestingMenu : MonoBehaviour
         //         timestampInput.text = DateTime.Now.ToUniversalTime()
         //             .ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture); 
         // }
-
+        
     }
 
     public void OpenSettings()

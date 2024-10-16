@@ -1,5 +1,9 @@
+using System.Collections;
+using System.Text;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Toggle = UnityEngine.UI.Toggle;
@@ -58,6 +62,9 @@ public class VideoController : MonoBehaviour
     [SerializeField] private Toggle sendLiveDataToggle;
     [SerializeField] private TextMeshProUGUI checkpointSpeedText;
     [SerializeField] private VideoPlayer videoPlayer;
+    
+    [SerializeField] TMP_Text DataToSend;
+    [SerializeField] TMP_Text DataReturned;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int _speedSetting = 0;
     private readonly float[] _speeds = {1f, 5f, 20f};
@@ -171,7 +178,8 @@ public class VideoController : MonoBehaviour
         // { 
             // videoPlayer.Play();
         // }
-
+        DataToSend.text = constructJson();
+        
         checkpointSpeedText.text = "" +
                                    "Current Checkpoint: " + _currentCheckpoint + "\n" +
                                    "Current PlaybackSpeed: " + _speeds[_speedSetting] + "\n" +
@@ -179,11 +187,90 @@ public class VideoController : MonoBehaviour
        
     }
 
+    private string constructJson()
+    {
+        string result = "";
+        // result += "{\n";
+        // result += "  \"event_type\": \"game_end\",\n";
+        // result += "  \"session_id\": \"2\",\n";    
+        // "session_id": "2",
+        //     "metadata": {
+        //         "timestamp": "2024-08-06T14:00:00Z",
+        //         "game_details": {
+        //             "final_scores": [
+        //             {
+        //                 "player_id": "1",
+        //                 "score": 5,
+        //                 "leaderboard_position": 1
+        //             },
+        //             {
+        //                 "player_id": "2",
+        //                 "score": 4,
+        //                 "leaderboard_position": 2
+        //             }
+        //             ],
+        //             "winner": {
+        //                 "player_id": "3",
+        //                 "score": 5,
+        //                 "leaderboard_position": 1
+        //             }
+        //         },
+        //     }
+        // }
+        return result;
+    }
+    
+    public void SendDataTest()
+    {
+        print("Sending data to the server");
+        StartCoroutine(TestPost());
+    }
+    
+    IEnumerator TestPost()
+    {
+        var request = new UnityWebRequest("localhost:8080/api/events/create/", "POST");
+        string jsonDataToSend = DataToSend.text;
+        JObject json = JObject.Parse(jsonDataToSend);
+        string jtext = json.ToString();
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jtext);
+        
+        request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        // print(request.GetRequestHeader("Content-Type"));
+        DataReturned.text = "Sending data to the server";
+        yield return request.Send();
+        string output = "Status Code: " + request.responseCode;
+        if (request.responseCode == 201)
+        {
+            output += "\n" + "Created. Success! Request was fulfilled and a new resource was created";
+        }
+        if (request.error != null)
+        {
+            output += "\nErrors: " + request.error;
+        }
+        else
+        {
+            output += "\nErrors: None";
+        }
+        output += "\nDownload Handler: " + request.downloadHandler.text;
+        output += "\nUpload Handler: " + request.uploadHandler.data;
+        
+        Debug.Log(output);
+        
+        DataReturned.text = output;
+    }
+    
     private void UpdateCheckpoint()
     {
         videoPlayer.Pause();
         _currentCheckpoint += 1;
         _currentCheckpoint %= _checkpoints.Length;
+        if (sendLiveDataToggle.isOn)
+        {
+            // Send data to server
+            
+        }
         videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
     }
 
