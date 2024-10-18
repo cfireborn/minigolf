@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Globalization;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using TMPro;
@@ -62,6 +64,7 @@ public class VideoController : MonoBehaviour
     [SerializeField] private Toggle sendLiveDataToggle;
     [SerializeField] private TextMeshProUGUI checkpointSpeedText;
     [SerializeField] private VideoPlayer videoPlayer;
+    private bool gameStarted = false;
     
     [SerializeField] TMP_Text DataToSend;
     [SerializeField] TMP_Text DataReturned;
@@ -124,9 +127,9 @@ public class VideoController : MonoBehaviour
     void Update()
     {
         // Check if we have advanced by any checkpoints;
-        if (videoPlayer.time > _checkpoints[(_currentCheckpoint+1)%_checkpoints.Length].GetTimeInSeconds())
+        if (_currentCheckpoint < _checkpoints.Length-1 && videoPlayer.isPlaying && videoPlayer.time > _checkpoints[_currentCheckpoint+1].GetTimeInSeconds())
         {
-            UpdateCheckpoint();
+            IncrementCheckpointAndPause();
         }
         
         if (Input.GetKeyDown(KeyCode.R))
@@ -178,10 +181,20 @@ public class VideoController : MonoBehaviour
         // { 
             // videoPlayer.Play();
         // }
-        DataToSend.text = constructJson();
         
-        checkpointSpeedText.text = "" +
-                                   "Current Checkpoint: " + _currentCheckpoint + "\n" +
+        // Prep send data to server
+        DataToSend.text = sendLiveDataToggle.isOn ? constructJson() : "Live Data sending is off";
+       
+        
+        if (sendLiveDataToggle.isOn && videoPlayer.isPlaying && gameStarted == false && _currentCheckpoint == 0)
+        {
+            gameStarted = true;
+            DataToSend.text = constructJson();
+            SendData();
+        }
+        
+        checkpointSpeedText.text = "Current Checkpoint: " + _currentCheckpoint + "\n" +
+                                   "At Checkpoint: " + CurrentlyAtCheckpoint() + "\n" +
                                    "Current PlaybackSpeed: " + _speeds[_speedSetting] + "\n" +
                                    "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time);
        
@@ -189,7 +202,39 @@ public class VideoController : MonoBehaviour
 
     private string constructJson()
     {
-        string result = "";
+        JObject json = new JObject();
+        string currentTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture); 
+        
+        if (_currentCheckpoint == 0)
+        {
+            json["event_type"] = "game_start";
+            json["session_id"] = "2";
+            json["metadata"] = new JObject
+            {
+                ["match_id"] = "12345",
+                ["timestamp"] = currentTime,
+                ["game_details"] = new JObject
+                {
+                    ["course_details"] = new JObject
+                    {
+                        ["course_id"] = "001",
+                        ["course_name"] = "Sunnydale Golf Course",
+                        ["num_holes"] = 18,
+                        ["holes"] = new JArray
+                        {
+                            new JObject { ["hole_number"] = 1, ["par"] = 4, ["yards"] = 350, ["baseline"] = 3.8 },
+                            new JObject { ["hole_number"] = 2, ["par"] = 3, ["yards"] = 180, ["baseline"] = 3.8 },
+                            new JObject { ["hole_number"] = 3, ["par"] = 4, ["yards"] = 430, ["baseline"] = 3.8 }
+                        }
+                    }
+                },
+                ["players"] = new JArray
+                {
+                    new JObject { ["player_id"] = "p1" },
+                    new JObject { ["player_id"] = "p2" }
+                }
+            };
+        }
         // result += "{\n";
         // result += "  \"event_type\": \"game_end\",\n";
         // result += "  \"session_id\": \"2\",\n";    
@@ -217,16 +262,16 @@ public class VideoController : MonoBehaviour
         //         },
         //     }
         // }
-        return result;
+        return json.ToString();
     }
     
-    public void SendDataTest()
+    public void SendData()
     {
         print("Sending data to the server");
-        StartCoroutine(TestPost());
+        StartCoroutine(PostData());
     }
     
-    IEnumerator TestPost()
+    IEnumerator PostData()
     {
         var request = new UnityWebRequest("localhost:8080/api/events/create/", "POST");
         string jsonDataToSend = DataToSend.text;
@@ -240,7 +285,8 @@ public class VideoController : MonoBehaviour
         // print(request.GetRequestHeader("Content-Type"));
         DataReturned.text = "Sending data to the server";
         yield return request.Send();
-        string output = "Status Code: " + request.responseCode;
+        string output = "Data sent: " + jtext + "\n"; 
+        output += "Status Code: " + request.responseCode;
         if (request.responseCode == 201)
         {
             output += "\n" + "Created. Success! Request was fulfilled and a new resource was created";
@@ -261,7 +307,7 @@ public class VideoController : MonoBehaviour
         DataReturned.text = output;
     }
     
-    private void UpdateCheckpoint()
+    private void IncrementCheckpointAndPause()
     {
         videoPlayer.Pause();
         _currentCheckpoint += 1;
@@ -269,9 +315,16 @@ public class VideoController : MonoBehaviour
         if (sendLiveDataToggle.isOn)
         {
             // Send data to server
-            
         }
-        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+        if (_currentCheckpoint < _checkpoints.Length)
+        {
+            videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+        }
+    }
+
+    bool CurrentlyAtCheckpoint()
+    {
+        return Math.Abs(videoPlayer.time - _checkpoints[_currentCheckpoint].GetTimeInSeconds()) < 0.1; 
     }
 
     public void SpeedUpShot()
