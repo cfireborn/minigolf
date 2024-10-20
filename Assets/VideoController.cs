@@ -261,7 +261,7 @@ public class VideoController : MonoBehaviour
         json["metadata"] = new JObject
         {
             ["sub_type"] = "hole_completed",
-            ["player_id"] = "p1",
+            ["player_id"] = "p" + _currentPlayer,
             ["hole_number"] = GetHoleNumber(),
             ["timestamp"] = "2024-08-06T10:15:00Z",
             ["details"] = new JObject
@@ -271,7 +271,7 @@ public class VideoController : MonoBehaviour
                     new JObject
                     {
                         ["player_id"] = "p1",
-                        ["player_name"] = "John Doe",
+                        ["player_name"] = _playerNames[1],
                         ["last_played_hole"] = 4,
                         ["overall_score"] = 1,
                         ["cumulative_par"] = 4,
@@ -280,7 +280,7 @@ public class VideoController : MonoBehaviour
                     new JObject
                     {
                         ["player_id"] = "p2",
-                        ["player_name"] = "Jane Smith",
+                        ["player_name"] = _playerNames[2],
                         ["last_played_hole"] = 3,
                         ["overall_score"] = 0,
                         ["cumulative_par"] = 4,
@@ -386,33 +386,6 @@ public class VideoController : MonoBehaviour
                 }
             };
         }
-        // result += "{\n";
-        // result += "  \"event_type\": \"game_end\",\n";
-        // result += "  \"session_id\": \"2\",\n";    
-        // "session_id": "2",
-        //     "metadata": {
-        //         "timestamp": "2024-08-06T14:00:00Z",
-        //         "game_details": {
-        //             "final_scores": [
-        //             {
-        //                 "player_id": "1",
-        //                 "score": 5,
-        //                 "leaderboard_position": 1
-        //             },
-        //             {
-        //                 "player_id": "2",
-        //                 "score": 4,
-        //                 "leaderboard_position": 2
-        //             }
-        //             ],
-        //             "winner": {
-        //                 "player_id": "3",
-        //                 "score": 5,
-        //                 "leaderboard_position": 1
-        //             }
-        //         },
-        //     }
-        // }
         return json.ToString();
     }
     
