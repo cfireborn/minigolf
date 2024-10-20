@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Toggle = UnityEngine.UI.Toggle;
@@ -64,15 +67,22 @@ public class VideoController : MonoBehaviour
     [SerializeField] private Toggle sendLiveDataToggle;
     [SerializeField] private TextMeshProUGUI checkpointSpeedText;
     [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private RawImage player2Overlay;
     private bool gameStarted = false;
-    private int currentPlayer = 0;
-    
-    [SerializeField] TMP_Text DataToSend;
+    [FormerlySerializedAs("DataToSend")] [SerializeField] TMP_Text dataToSend;
     [SerializeField] TMP_Text DataReturned;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int _speedSetting = 0;
     private readonly float[] _speeds = {1f, 5f, 20f};
     private int _currentCheckpoint = 0;
+    
+    private int _currentPlayer = 1;
+    private Dictionary<int, string> _playerNames = new Dictionary<int, string>()
+    {
+        {1, "Juli"}, 
+        {2, "Tiger"}
+    };
+
     
     private readonly Timestamp[] _checkpoints = new Timestamp[]
     {
@@ -135,12 +145,12 @@ public class VideoController : MonoBehaviour
             if (sendLiveDataToggle.isOn)
             {
                 // Send shot data to server
-                DataToSend.text = ConstructShotExecutedJson();
+                dataToSend.text = ConstructShotExecutedJson();
                 SendData();
                 if (_currentCheckpoint is 5 or 13 or 17)
                 {
                     //  Send hole completed data to server
-                    DataToSend.text = ConstructHoleCompletedJson();
+                    dataToSend.text = ConstructHoleCompletedJson();
                     SendData();
                 }
             }
@@ -207,29 +217,40 @@ public class VideoController : MonoBehaviour
         // }
         
         // Prep send data to server
-        DataToSend.text = sendLiveDataToggle.isOn ? ConstructShotExecutedJson() : "Live Data sending is off";
+        dataToSend.text = sendLiveDataToggle.isOn ? ConstructShotExecutedJson() : "Live Data sending is off";
         
         //Send startgame data
         if (sendLiveDataToggle.isOn && videoPlayer.isPlaying && gameStarted == false && _currentCheckpoint == 0)
         {
             gameStarted = true;
-            DataToSend.text = ConstructShotExecutedJson();
+            dataToSend.text = ConstructShotExecutedJson();
             SendData();
         }
         
         checkpointSpeedText.text = "Current Checkpoint: " + _currentCheckpoint + "\n" +
                                    "At Checkpoint: " + CurrentlyAtCheckpoint() + "\n" +
                                    "Current PlaybackSpeed: " + _speeds[_speedSetting] + "\n" +
-                                   "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time);
+                                   "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time)
+                                   + "\n" + "Current Player: " + _currentPlayer;
        
     }
     private void SwitchPlayer()
     {
-        currentPlayer = currentPlayer == 1 ? 2 : 1;
+        _currentPlayer = _currentPlayer == 1 ? 2 : 1;
     }
     private void SwitchPlayer(int player)
     {
-        currentPlayer = player;
+        _currentPlayer = player;
+        if (player == 2)
+        {
+            player2Overlay.gameObject.SetActive(true);
+        }
+        else
+        {
+            player2Overlay.gameObject.SetActive(false);
+        }
+            
+            
     }
 
     private string ConstructHoleCompletedJson()
@@ -404,7 +425,7 @@ public class VideoController : MonoBehaviour
     IEnumerator PostData()
     {
         var request = new UnityWebRequest("localhost:8080/api/events/create/", "POST");
-        string jsonDataToSend = DataToSend.text;
+        string jsonDataToSend = dataToSend.text;
         JObject json = JObject.Parse(jsonDataToSend);
         string jtext = json.ToString();
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jtext);
