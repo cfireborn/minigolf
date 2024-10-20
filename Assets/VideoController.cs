@@ -65,6 +65,7 @@ public class VideoController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI checkpointSpeedText;
     [SerializeField] private VideoPlayer videoPlayer;
     private bool gameStarted = false;
+    private int currentPlayer = 0;
     
     [SerializeField] TMP_Text DataToSend;
     [SerializeField] TMP_Text DataReturned;
@@ -144,7 +145,17 @@ public class VideoController : MonoBehaviour
                 }
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SwitchPlayer(1);
+        }
         
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SwitchPlayer(2);
+        }
+
         if (Input.GetKeyDown(KeyCode.R))
         {
                     ResetCheckpoint();
@@ -211,6 +222,14 @@ public class VideoController : MonoBehaviour
                                    "Current PlaybackSpeed: " + _speeds[_speedSetting] + "\n" +
                                    "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time);
        
+    }
+    private void SwitchPlayer()
+    {
+        currentPlayer = currentPlayer == 1 ? 2 : 1;
+    }
+    private void SwitchPlayer(int player)
+    {
+        currentPlayer = player;
     }
 
     private string ConstructHoleCompletedJson()
