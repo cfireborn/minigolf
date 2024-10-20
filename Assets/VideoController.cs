@@ -234,9 +234,16 @@ public class VideoController : MonoBehaviour
                                    + "\n" + "Current Player: " + _currentPlayer;
        
     }
-    private void SwitchPlayer()
+    public void SwitchPlayer()
     {
-        _currentPlayer = _currentPlayer == 1 ? 2 : 1;
+        if (_currentPlayer == 1)
+        {
+            SwitchPlayer(2);
+        }
+        else
+        {
+            SwitchPlayer(1);
+        }
     }
     private void SwitchPlayer(int player)
     {
@@ -347,7 +354,7 @@ public class VideoController : MonoBehaviour
                     {
                         ["course_id"] = "001",
                         ["course_name"] = "Sunnydale Golf Course",
-                        ["num_holes"] = 18,
+                        ["num_holes"] = 3,
                         ["holes"] = new JArray
                         {
                             new JObject { ["hole_number"] = 1, ["par"] = 4, ["yards"] = 350, ["baseline"] = 3.8 },
