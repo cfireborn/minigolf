@@ -370,7 +370,7 @@ public class VideoController : MonoBehaviour
             json["metadata"] = new JObject
             {
                 ["sub_type"] = "shot_executed",
-                ["player_id"] = "p1",
+                ["player_id"] = "p" + _currentPlayer,
                 ["hole_number"] = holeNumber,
                 ["timestamp"] = currentTime,
                 ["details"] = new JObject

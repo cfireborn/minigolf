@@ -4293,8 +4293,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -233.33328, y: -131.24998}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -241.63913, y: -131.24998}
+  m_SizeDelta: {x: 116.6117, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1956083843
 MonoBehaviour:
@@ -4312,7 +4312,7 @@ MonoBehaviour:
   checkpointSpeedText: {fileID: 328615419}
   videoPlayer: {fileID: 1956083841}
   player2Overlay: {fileID: 1877359428}
-  DataToSend: {fileID: 1687458345}
+  dataToSend: {fileID: 1687458345}
   DataReturned: {fileID: 1070071763}
 --- !u!1 &1988186620
 GameObject:
