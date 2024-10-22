@@ -71,9 +71,12 @@ public class VideoController : MonoBehaviour
     private bool gameStarted = false;
     [FormerlySerializedAs("DataToSend")] [SerializeField] TMP_Text dataToSend;
     [SerializeField] TMP_Text DataReturned;
-    
+    [SerializeField] private TMP_InputField UrlInputField;
     private float _timeSinceDataReturned = float.PositiveInfinity;
+    private bool _returnedError;
     Color invisibleMagenta = new Color(1.0f, 0.0f, 1.0f, 0.0f);
+    Color invisibleCyan = new Color(0.0f, 1.0f, 1.0f, 0.0f);
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int _speedSetting = 0;
     private readonly float[] _speeds = {1f, 5f, 20f};
@@ -130,7 +133,8 @@ public class VideoController : MonoBehaviour
         // Video End
         new Timestamp(0, 2, 16.5)
     };
-    
+
+
     void Start()
     {
         videoPlayer.time = _checkpoints[0].GetTimeInSeconds();
@@ -232,7 +236,14 @@ public class VideoController : MonoBehaviour
         _timeSinceDataReturned += Time.deltaTime;
         if (_timeSinceDataReturned < 3)
         {
-            DataReturned.faceColor = Color.white - (invisibleMagenta * (1 - _timeSinceDataReturned / 3));
+            if (_returnedError)
+            {
+                DataReturned.faceColor = Color.white - (invisibleCyan * (1 - _timeSinceDataReturned / 3));
+            }
+            else
+            {
+                DataReturned.faceColor = Color.white - (invisibleMagenta * (1 - _timeSinceDataReturned / 3));
+            }
         }
         checkpointSpeedText.text = "Current Checkpoint: " + _currentCheckpoint + "\n" +
                                    "At Checkpoint: " + CurrentlyAtCheckpoint() + "\n" +
@@ -411,7 +422,7 @@ public class VideoController : MonoBehaviour
     
     IEnumerator PostData()
     {
-        var request = new UnityWebRequest("localhost:8080/api/events/create/", "POST");
+        var request = new UnityWebRequest(UrlInputField.text, "POST");
         string jsonDataToSend = dataToSend.text;
         JObject json = JObject.Parse(jsonDataToSend);
         string jtext = json.ToString();
@@ -433,10 +444,12 @@ public class VideoController : MonoBehaviour
         if (request.error != null)
         {
             output += "\nErrors: " + request.error;
+            _returnedError = true;
         }
         else
         {
             output += "\nErrors: None";
+            _returnedError = false;
         }
         output += "\nDownload Handler: " + request.downloadHandler.text;
         output += "\nUpload Handler: " + request.uploadHandler.data;
