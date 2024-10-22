@@ -71,6 +71,9 @@ public class VideoController : MonoBehaviour
     private bool gameStarted = false;
     [FormerlySerializedAs("DataToSend")] [SerializeField] TMP_Text dataToSend;
     [SerializeField] TMP_Text DataReturned;
+    
+    private float _timeSinceDataReturned = float.PositiveInfinity;
+    Color invisibleMagenta = new Color(1.0f, 0.0f, 1.0f, 0.0f);
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int _speedSetting = 0;
     private readonly float[] _speeds = {1f, 5f, 20f};
@@ -226,7 +229,11 @@ public class VideoController : MonoBehaviour
             dataToSend.text = ConstructShotExecutedJson();
             SendData();
         }
-        
+        _timeSinceDataReturned += Time.deltaTime;
+        if (_timeSinceDataReturned < 3)
+        {
+            DataReturned.faceColor = Color.white - (invisibleMagenta * (1 - _timeSinceDataReturned / 3));
+        }
         checkpointSpeedText.text = "Current Checkpoint: " + _currentCheckpoint + "\n" +
                                    "At Checkpoint: " + CurrentlyAtCheckpoint() + "\n" +
                                    "Current PlaybackSpeed: " + _speeds[_speedSetting] + "\n" +
@@ -415,6 +422,7 @@ public class VideoController : MonoBehaviour
         request.SetRequestHeader("Content-Type", "application/json");
         // print(request.GetRequestHeader("Content-Type"));
         DataReturned.text = "Sending data to the server";
+        _timeSinceDataReturned = 0;
         yield return request.Send();
         string output = "Data sent: " + jtext + "\n"; 
         output += "Status Code: " + request.responseCode;
@@ -436,6 +444,7 @@ public class VideoController : MonoBehaviour
         Debug.Log(output);
         
         DataReturned.text = output;
+        _timeSinceDataReturned = 0;
     }
     
     private void IncrementCheckpointAndPause()
