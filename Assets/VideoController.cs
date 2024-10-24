@@ -6,11 +6,9 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.DedicatedServer;
 using UnityEngine.Networking;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -69,14 +67,14 @@ public class VideoController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI checkpointSpeedText;
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private RawImage player2Overlay;
-    private bool gameStarted = false;
+    private bool _gameStarted = false;
     [FormerlySerializedAs("DataToSend")] [SerializeField] TMP_Text dataToSend;
-    [SerializeField] TMP_Text DataReturned;
-    [SerializeField] private TMP_InputField UrlInputField;
+    [FormerlySerializedAs("DataReturned")] [SerializeField] TMP_Text dataReturned;
+    [FormerlySerializedAs("UrlInputField")] [SerializeField] private TMP_InputField urlInputField;
     private float _timeSinceDataReturned = float.PositiveInfinity;
     private bool _returnedError;
-    Color invisibleMagenta = new Color(1.0f, 0.0f, 1.0f, 0.0f);
-    Color invisibleCyan = new Color(0.0f, 1.0f, 1.0f, 0.0f);
+    readonly Color _invisibleMagenta = new Color(1.0f, 0.0f, 1.0f, 0.0f);
+    readonly Color _invisibleCyan = new Color(0.0f, 1.0f, 1.0f, 0.0f);
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int _speedSetting = 0;
@@ -232,9 +230,9 @@ public class VideoController : MonoBehaviour
         dataToSend.text = sendLiveDataToggle.isOn ? ConstructShotExecutedJson() : "Live Data sending is off";
         
         //Send startgame data
-        if (sendLiveDataToggle.isOn && videoPlayer.isPlaying && gameStarted == false && _currentCheckpoint == 0)
+        if (sendLiveDataToggle.isOn && videoPlayer.isPlaying && _gameStarted == false && _currentCheckpoint == 0)
         {
-            gameStarted = true;
+            _gameStarted = true;
             dataToSend.text = ConstructShotExecutedJson();
             SendData();
         }
@@ -243,11 +241,11 @@ public class VideoController : MonoBehaviour
         {
             if (_returnedError)
             {
-                DataReturned.faceColor = Color.white - (invisibleCyan * (1 - _timeSinceDataReturned / 3));
+                dataReturned.faceColor = Color.white - (_invisibleCyan * (1 - _timeSinceDataReturned / 3));
             }
             else
             {
-                DataReturned.faceColor = Color.white - (invisibleMagenta * (1 - _timeSinceDataReturned / 3));
+                dataReturned.faceColor = Color.white - (_invisibleMagenta * (1 - _timeSinceDataReturned / 3));
             }
         }
 
@@ -388,12 +386,16 @@ public class VideoController : MonoBehaviour
                     {
                         ["course_id"] = "001",
                         ["course_name"] = "Sunnydale Golf Course",
+                        ["course_name"] = "Whispering Pines",
                         ["num_holes"] = 3,
                         ["holes"] = new JArray
                         {
                             new JObject { ["hole_number"] = 1, ["par"] = 4, ["yards"] = 350, ["baseline"] = 3.8 },
                             new JObject { ["hole_number"] = 2, ["par"] = 3, ["yards"] = 180, ["baseline"] = 3.8 },
                             new JObject { ["hole_number"] = 3, ["par"] = 4, ["yards"] = 430, ["baseline"] = 3.8 }
+                            new JObject { ["hole_number"] = 1, ["par"] = 4, ["yards"] = 277, ["difficulty"] = 3 },
+                            new JObject { ["hole_number"] = 2, ["par"] = 5, ["yards"] = 513, ["difficulty"] = 1 },
+                            new JObject { ["hole_number"] = 3, ["par"] = 3, ["yards"] = 143, ["difficulty"] = 2 }
                         }
                     }
                 },
@@ -438,7 +440,7 @@ public class VideoController : MonoBehaviour
     
     IEnumerator PostData()
     {
-        var request = new UnityWebRequest(UrlInputField.text, "POST");
+        var request = new UnityWebRequest(urlInputField.text, "POST");
         string jsonDataToSend = dataToSend.text;
         JObject json = JObject.Parse(jsonDataToSend);
         string jtext = json.ToString();
@@ -448,7 +450,7 @@ public class VideoController : MonoBehaviour
         request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
         // print(request.GetRequestHeader("Content-Type"));
-        DataReturned.text = "Sending data to the server";
+        dataReturned.text = "Sending data to the server";
         _timeSinceDataReturned = 0;
         yield return request.Send();
         string output = "Data sent: " + jtext + "\n"; 
@@ -472,7 +474,7 @@ public class VideoController : MonoBehaviour
         
         Debug.Log(output);
         
-        DataReturned.text = output;
+        dataReturned.text = output;
         _timeSinceDataReturned = 0;
     }
     
@@ -533,7 +535,7 @@ public class VideoController : MonoBehaviour
          
     }
     
-    private void ForwardFlow()
+    public void ForwardFlow()
     {
         if (_currentCheckpoint % 2 == 0 && CurrentlyAtCheckpoint())
         {
@@ -550,15 +552,15 @@ public class VideoController : MonoBehaviour
             // If paused at an odd checkpoint
             if (_currentPlayer == 1)
             {
+                PreviousCheckpoint();
                 // Switch to player2 and go back to the previous even checkpoint
                 SwitchPlayer(2);
-                PreviousCheckpoint();
             }
             else
             {
+                NextCheckpoint();
                 // Switch back to player1 and skip forward to the start of the next hit
                 SwitchPlayer(1);
-                NextCheckpoint();
             }
         }
     }
