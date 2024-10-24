@@ -206,6 +206,10 @@ public class VideoController : MonoBehaviour
                 videoPlayer.Play();
             }
         }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            ForwardFlow();
+        }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
                     videoPlayer.time -= 1d;
@@ -511,12 +515,51 @@ public class VideoController : MonoBehaviour
 
     public void PreviousCheckpoint()
     {
-        _currentCheckpoint -= 2;
-        _currentCheckpoint %= _checkpoints.Length;
-        if (_currentCheckpoint < 0)
+        if (CurrentlyAtCheckpoint())
         {
-            _currentCheckpoint += _checkpoints.Length;
+            _currentCheckpoint -= 1;
+            _currentCheckpoint %= _checkpoints.Length;
+            if (_currentCheckpoint < 0)
+            {
+                _currentCheckpoint += _checkpoints.Length;
+            }
+            videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
         }
-        videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+        else
+        {
+            videoPlayer.time = _checkpoints[_currentCheckpoint].GetTimeInSeconds();
+            videoPlayer.Pause();
+        }
+         
+    }
+    
+    private void ForwardFlow()
+    {
+        if (_currentCheckpoint % 2 == 0 && CurrentlyAtCheckpoint())
+        {
+            // Play the game if at the start of a hitting checkpoint (even numbered)
+            videoPlayer.Play();
+        }
+        else if (videoPlayer.isPlaying)
+        {
+            // Skip forward to complete the hit if between an even and an odd checkpoint
+            SkipAnimation();
+        }
+        else
+        {
+            // If paused at an odd checkpoint
+            if (_currentPlayer == 1)
+            {
+                // Switch to player2 and go back to the previous even checkpoint
+                SwitchPlayer(2);
+                PreviousCheckpoint();
+            }
+            else
+            {
+                // Switch back to player1 and skip forward to the start of the next hit
+                SwitchPlayer(1);
+                NextCheckpoint();
+            }
+        }
     }
 }
