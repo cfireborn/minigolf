@@ -87,7 +87,73 @@ public class VideoController : MonoBehaviour
         {1, "Juli"}, 
         {2, "Tiger"}
     };
-
+    
+    //Hardcoded hole completed meta data
+    private ArrayList _holeCompletedMetadata = new ArrayList()
+    {
+        //
+        new JObject { },
+        //
+        new JObject { },
+        //
+        new JObject { }
+    };
+    
+    //Hardcoded shot_executed data
+    private List<JObject> _shotExecutedMetadata = new List<JObject>()
+    {        //
+        new JObject
+        {
+            ["details"] = new JObject
+            {
+                ["leaderboard"] = new JArray
+                {
+                    new JObject
+                    {
+                        ["player_id"] = "p1",
+                        ["last_played_hole"] = 4,
+                        ["last_hole_strokes"] = 4,
+                        ["cumulative_par"] = 4,
+                        ["leaderboard_position"] = 1
+                    },
+                    new JObject
+                    {
+                        ["player_id"] = "p2",
+                        ["last_played_hole"] = 3,
+                        ["cumulative_par"] = 4,
+                        ["leaderboard_position"] = 2
+                    }
+                },
+                ["current_hole_stats"] = new JObject
+                {
+                    ["par"] = 4,
+                    ["total_yards"] = 350,
+                    ["strokes"] = 1,
+                    ["hole_score"] = -3,
+                    ["info"] = "eagle"
+                },
+                ["overall_stats"] = new JObject
+                {
+                    ["cumulative_par"] = 4,
+                    ["overall_score"] = 0,
+                    ["cumulative_strokes_gained"] = 0.5,
+                    ["cumulative_strokes_lost"] = 0.5,
+                    ["cumulative_fairways_hit"] = 2,
+                    ["fairways_hit_percent"] = 100,
+                    ["driving_accuracy"] = 90,
+                    ["gir_percent"] = 50,
+                    ["average_putts_per_green"] = 2,
+                    ["average_putts_per_round"] = 2,
+                    ["one_put_percent"] = 15
+                }
+            },
+        },
+        //
+        new JObject { },
+        //
+        new JObject { }
+    };
+    
     
     private readonly Timestamp[] _checkpoints = new Timestamp[]
     {
@@ -144,20 +210,23 @@ public class VideoController : MonoBehaviour
     void Update()
     {
         // Check if we have advanced by any checkpoints;
-        //check for max checkpoint, if so check if video is playing, if so check if video
+        //check for max checkpoint, then check if video is playing, then check if video has reached the next checkpoint
         if (_currentCheckpoint < _checkpoints.Length-1 && videoPlayer.isPlaying && videoPlayer.time > _checkpoints[_currentCheckpoint+1].GetTimeInSeconds())
         {
             IncrementCheckpointAndPause();
             if (sendLiveDataToggle.isOn)
             {
-                // Send shot data to server
-                dataToSend.text = ConstructShotExecutedJson();
-                SendData();
-                if (_currentCheckpoint is 5 or 13 or 17)
+                if (_currentCheckpoint % 2 == 1)
                 {
-                    //  Send hole completed data to server
-                    dataToSend.text = ConstructHoleCompletedJson();
+                    // Send shot data to server
+                    dataToSend.text = ConstructShotExecutedJson();
                     SendData();
+                    if (_currentCheckpoint is 5 or 13 or 17)
+                    {
+                        //  Send hole completed data to server
+                        dataToSend.text = ConstructHoleCompletedJson();
+                        SendData();
+                    } 
                 }
             }
         }
@@ -291,18 +360,21 @@ public class VideoController : MonoBehaviour
             
             
     }
-
     private string ConstructHoleCompletedJson()
     {
         JObject json = new JObject();
+        
+        string currentTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture);
+        
         json["event_type"] = "in_game_event";
         json["session_id"] = "2";
+        json["metadata2"] = _shotExecutedMetadata[0]; 
         json["metadata"] = new JObject
         {
             ["sub_type"] = "hole_completed",
             ["player_id"] = "p" + _currentPlayer,
             ["hole_number"] = GetHoleNumber(),
-            ["timestamp"] = "2024-08-06T10:15:00Z",
+            ["timestamp"] = currentTime,
             ["details"] = new JObject
             {
                 ["leaderboard"] = new JArray
@@ -312,7 +384,8 @@ public class VideoController : MonoBehaviour
                         ["player_id"] = "p1",
                         ["player_name"] = _playerNames[1],
                         ["last_played_hole"] = 4,
-                        ["overall_score"] = 1,
+                        ["last_hole_strokes"] = 4,
+                        ["cumulative_strokes"] = _currentCheckpoint/2 + 1,
                         ["cumulative_par"] = 4,
                         ["leaderboard_position"] = 1
                     },
@@ -321,7 +394,7 @@ public class VideoController : MonoBehaviour
                         ["player_id"] = "p2",
                         ["player_name"] = _playerNames[2],
                         ["last_played_hole"] = 3,
-                        ["overall_score"] = 0,
+                        ["cumulative_strokes"] = _currentCheckpoint/2 + 1,
                         ["cumulative_par"] = 4,
                         ["leaderboard_position"] = 2
                     }
@@ -348,7 +421,7 @@ public class VideoController : MonoBehaviour
                     ["average_putts_per_round"] = 2,
                     ["one_put_percent"] = 15
                 }
-            }
+            },
         };
         return json.ToString();
     }
@@ -366,11 +439,25 @@ public class VideoController : MonoBehaviour
         return 3;
     }
 
+    private int GetCurrHoleStrokes(int i)
+    {
+        if (_currentCheckpoint is >= 0 and <= 5)
+        {
+            return 1;
+        }
+        if (_currentCheckpoint is >= 6 and <= 13)
+        {
+            return 2;
+        }
+        return 3;
+    }
+
     private string ConstructShotExecutedJson()
     {
         JObject json = new JObject();
         string currentTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture);
         int holeNumber = GetHoleNumber();
+        int currHoleStrokes = holeNumber;
         
         if (_currentCheckpoint == 0)
         {
@@ -385,17 +472,13 @@ public class VideoController : MonoBehaviour
                     ["course_details"] = new JObject
                     {
                         ["course_id"] = "001",
-                        ["course_name"] = "Sunnydale Golf Course",
                         ["course_name"] = "Whispering Pines",
                         ["num_holes"] = 3,
                         ["holes"] = new JArray
                         {
-                            new JObject { ["hole_number"] = 1, ["par"] = 4, ["yards"] = 350, ["baseline"] = 3.8 },
-                            new JObject { ["hole_number"] = 2, ["par"] = 3, ["yards"] = 180, ["baseline"] = 3.8 },
-                            new JObject { ["hole_number"] = 3, ["par"] = 4, ["yards"] = 430, ["baseline"] = 3.8 }
-                            new JObject { ["hole_number"] = 1, ["par"] = 4, ["yards"] = 277, ["difficulty"] = 3 },
-                            new JObject { ["hole_number"] = 2, ["par"] = 5, ["yards"] = 513, ["difficulty"] = 1 },
-                            new JObject { ["hole_number"] = 3, ["par"] = 3, ["yards"] = 143, ["difficulty"] = 2 }
+                            new JObject { ["hole_number"] = 1, ["par"] = 4, ["yards"] = 277, ["difficulty_ranking"] = 3 },
+                            new JObject { ["hole_number"] = 2, ["par"] = 5, ["yards"] = 513, ["difficulty_ranking"] = 1 },
+                            new JObject { ["hole_number"] = 3, ["par"] = 3, ["yards"] = 143, ["difficulty_ranking"] = 2 }
                         }
                     }
                 },
@@ -418,16 +501,16 @@ public class VideoController : MonoBehaviour
                 ["timestamp"] = currentTime,
                 ["details"] = new JObject
                 {
-                    ["shot_number"] = _currentCheckpoint/2 + 1,
+                    ["strokes"] = _currentCheckpoint / 2 + 1,
                     ["info"] = "bad_shot",
                     ["club_used"] = "Driver",
                     ["yards"] = 250,
-                    ["strokes"] = 1,
                     ["hole_score"] = -3,
                     ["strokes_gained"] = 0.2,
                     ["hole_completed"] = false
                 }
             };
+            json["metadata"]["details"]["player_id2"] = "p" + _currentPlayer;
         }
         return json.ToString();
     }
