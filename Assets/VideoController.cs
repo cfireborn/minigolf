@@ -6,6 +6,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.DedicatedServer;
 using UnityEngine.Networking;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -245,12 +246,23 @@ public class VideoController : MonoBehaviour
                 DataReturned.faceColor = Color.white - (invisibleMagenta * (1 - _timeSinceDataReturned / 3));
             }
         }
+
+        string args = "";
+        string[] arguments = Environment.GetCommandLineArgs();
+        int argcount = 0; 
+        foreach (string arg in arguments)
+        {
+            args += argcount + "." + arg + " ";
+            argcount++;
+        }
+
         checkpointSpeedText.text = "Current Checkpoint: " + _currentCheckpoint + "\n" +
                                    "At Checkpoint: " + CurrentlyAtCheckpoint() + "\n" +
                                    "Current PlaybackSpeed: " + _speeds[_speedSetting] + "\n" +
                                    "Current Time: " + Timestamp.GetStringFromSeconds(videoPlayer.time)
-                                   + "\n" + "Current Player: " + _currentPlayer;
-       
+                                   + "\n" + "Current Player: " + _currentPlayer
+                                   + "\n" + "Command Line Args: " + args;
+
     }
     public void SwitchPlayer()
     {
