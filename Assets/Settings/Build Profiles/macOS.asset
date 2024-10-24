@@ -20,6 +20,8 @@ MonoBehaviour:
   m_Scenes:
   - m_enabled: 1
     m_path: Assets/LlamAcademy/Minigolf/Scenes/GenerateMenusScene.unity
+  - m_enabled: 1
+    m_path: Assets/LlamAcademy/Minigolf/Scenes/VideoScene.unity
   - m_enabled: 0
     m_path: Assets/LlamAcademy/Minigolf/Scenes/Main Menu.unity
   - m_enabled: 0
